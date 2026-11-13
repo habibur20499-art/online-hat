@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>অর্ডার করুন — Online Hat</title>
-  <meta name="description" content="অর্ডার করতে ফর্ম পূরণ করুন। ক্যাশ অন ডেলিভারি অথবা bKash/Nagad অ্যাডভান্সে ডিসকাউন্ট।">
+  <meta name="description" content="এক ক্লিকে অর্ডার করুন। ক্যাশ অন ডেলিভারি অথবা bKash/Nagad অ্যাডভান্সে ডিসকাউন্ট।">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧢</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -46,85 +47,10 @@
         <p class="stock-note">✅ স্টকে আছে — আজই অর্ডার করুন</p>
         <p id="pDesc" style="margin-top:10px; font-size:15px"></p>
 
-        <!-- ORDER FORM -->
-        <div class="order-form">
-          <h2>🛒 অর্ডার ফর্ম</h2>
-
-          <div class="field">
-            <label>পরিমাণ (Quantity)</label>
-            <div class="qty-row">
-              <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
-              <input id="qty" type="number" value="1" min="1" oninput="calc()">
-              <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>আপনার নাম *</label>
-            <input id="fName" type="text" placeholder="যেমন: রহিম উদ্দিন">
-          </div>
-
-          <div class="field">
-            <label>মোবাইল নম্বর *</label>
-            <input id="fPhone" type="tel" placeholder="01XXXXXXXXX" maxlength="11" inputmode="numeric">
-          </div>
-
-          <div class="field">
-            <label>সম্পূর্ণ ঠিকানা *</label>
-            <textarea id="fAddress" rows="2" placeholder="গ্রাম/বাসা, রোড, থানা, জেলা"></textarea>
-          </div>
-
-          <div class="field">
-            <label>ডেলিভারি এরিয়া *</label>
-            <select id="fArea" onchange="calc()">
-              <option value="inside">ঢাকার ভিতরে (ডেলিভারি ৳60)</option>
-              <option value="outside">ঢাকার বাইরে (ডেলিভারি ৳120)</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>পেমেন্ট মেথড *</label>
-            <div class="payment-options">
-              <label class="pay-opt active" id="optCod">
-                <input type="radio" name="pay" value="cod" checked onchange="calc()">
-                <span>💵 ক্যাশ অন ডেলিভারি<small>পণ্য হাতে পেয়ে টাকা দিন</small></span>
-              </label>
-              <label class="pay-opt" id="optAdvance">
-                <input type="radio" name="pay" value="advance" onchange="calc()">
-                <span>bKash/Nagad অ্যাডভান্স <span class="disc" id="discLabel">🎁 ৫% ছাড়</span><small>অ্যাডভান্স দিলে ডিসকাউন্ট</small></span>
-              </label>
-            </div>
-            <div class="advance-info" id="advanceInfo">
-              <b>অ্যাডভান্স দেওয়ার নিয়ম:</b><br>
-              Send Money করুন → <b id="advBkash">bKash: 01XXXXXXXXX</b> অথবা <b id="advNagad">Nagad: 01XXXXXXXXX</b><br>
-              TrxID নিচে লিখুন (যেমন: 9N7A2K1B8C)
-              <div class="field" style="margin-top:8px; margin-bottom:0">
-                <input id="fTrx" type="text" placeholder="TrxID / রেফারেন্স নম্বর (অপশনাল)">
-              </div>
-            </div>
-          </div>
-
-          <!-- Summary -->
-          <div class="summary">
-            <div class="row"><span>পণ্যের মূল্য (× <span id="sumQty">1</span>)</span><span id="sumSub">৳0</span></div>
-            <div class="row discount" id="rowDiscount" style="display:none"><span>অ্যাডভান্স ডিসকাউন্ট</span><span id="sumDiscount">−৳0</span></div>
-            <div class="row"><span>ডেলিভারি চার্জ</span><span id="sumDelivery">৳0</span></div>
-            <div class="row total"><span>সর্বমোট</span><span id="sumTotal">৳0</span></div>
-          </div>
-
-          <div class="form-error" id="formError">⚠️ সব তথ্য সঠিকভাবে পূরণ করুন (মোবাইল নম্বর ১১ ডিজিটের হতে হবে)</div>
-
-          <button class="submit-btn" onclick="submitOrder()">✅ অর্ডার কনফার্ম করুন (WhatsApp)</button>
-          <p style="font-size:12px; color:var(--muted); margin-top:8px; text-align:center">
-            অর্ডার দিলে আমাদের টিম কল দিয়ে কনফার্ম করবে ইনশাআল্লাহ
-          </p>
-
-          <!-- Success message -->
-          <div class="confirm-box" id="confirmBox">
-            <h2>🎉 অর্ডার সফল হয়েছে!</h2>
-            <p>আপনার অর্ডার আমরা পেয়েছি। শীঘ্রই আমাদের প্রতিনিধি কল দিয়ে কনফার্ম করবে।<br>WhatsApp চালু করে অর্ডার মেসেজটি পাঠিয়ে দিন।</p>
-          </div>
-        </div>
+        <button class="buy-btn" onclick="openModal()">🛒 এক ক্লিকে অর্ডার করুন — <span id="buyPrice">৳0</span></button>
+        <p style="font-size:13px; color:var(--muted); margin-top:10px">
+          💵 ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে টাকা দিন) &nbsp;|&nbsp; 🎁 bKash/Nagad অ্যাডভান্সে <span class="disc-inline">ডিসকাউন্ট</span>
+        </p>
       </div>
     </div>
   </section>
@@ -145,14 +71,103 @@
     </div>
   </footer>
 
+  <!-- Mobile sticky order bar -->
   <div class="sticky-bar">
     <a class="sticky-call" id="stickyCall" href="#">📞 কল করুন</a>
-    <a class="sticky-order" href="#qty">🛍️ অর্ডার করুন</a>
+    <a class="sticky-order" onclick="openModal()">🛒 অর্ডার করুন</a>
   </div>
 
-  <script src="products.js?v=2"></script>
+  <!-- ================= ONE-CLICK ORDER MODAL ================= -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>🛒 ক্যাশ অন ডেলিভারিতে অর্ডার করার<br>জন্য নিচের ফর্মটি পূরন করুন</h2>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <!-- Product summary -->
+      <div class="order-product">
+        <div class="op-thumb"><span id="mEmoji">🛍️</span><img id="mImg" src="" alt="" onerror="this.style.display='none'"></div>
+        <div class="op-info">
+          <div class="op-name" id="mName"></div>
+          <div class="op-price"><s id="mOld"></s> <b id="mPrice"></b></div>
+        </div>
+        <div class="qty-row">
+          <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input id="qty" type="number" value="1" min="1" oninput="calc()">
+          <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>আপনার নাম *</label>
+        <input id="fName" type="text" placeholder="Full Name">
+      </div>
+      <div class="field">
+        <label>মোবাইল নাম্বার *</label>
+        <input id="fPhone" type="tel" placeholder="Mobile Number" maxlength="11" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>আপনার কুল ঠিকানা *</label>
+        <textarea id="fAddress" rows="2" placeholder="Full Address"></textarea>
+      </div>
+      <div class="field">
+        <label>আপনার জেলা *</label>
+        <select id="fDistrict" onchange="calc()"></select>
+      </div>
+
+      <div class="field">
+        <label>ডেলিভারি অপশন</label>
+        <div class="pay-box-mini" id="areaNote">🚚 ডেলিভারি চার্জ জেলা অনুযায়ী হিসাব হবে</div>
+      </div>
+
+      <div class="field">
+        <label>পেমেন্ট মেথড *</label>
+        <div class="payment-options">
+          <label class="pay-opt active" id="optCod">
+            <input type="radio" name="pay" value="cod" checked onchange="payChange()">
+            <span>💵 ক্যাশ অন ডেলিভারি<small>পণ্য হাতে পেয়ে টাকা দিন</small></span>
+          </label>
+          <label class="pay-opt" id="optAdvance">
+            <input type="radio" name="pay" value="advance" onchange="payChange()">
+            <span>bKash/Nagad অ্যাডভান্স <span class="disc" id="discLabel"></span><small>অ্যাডভান্স দিলে ডিসকাউন্ট</small></span>
+          </label>
+        </div>
+        <div class="advance-info" id="advanceInfo">
+          <b>অ্যাডভান্স দেওয়ার নিয়ম:</b><br>
+          Send Money করুন → <b id="advBkash"></b> অথবা <b id="advNagad"></b><br>
+          TrxID নিচে লিখুন (যেমন: 9N7A2K1B8C)
+          <div class="field" style="margin-top:8px; margin-bottom:0">
+            <input id="fTrx" type="text" placeholder="TrxID / রেফারেন্স নম্বর (অপশনাল)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary">
+        <div class="row"><span>সাব টোটাল</span><span id="sumSub">৳0</span></div>
+        <div class="row discount" id="rowDiscount" style="display:none"><span>ডিসকাউন্ট</span><span id="sumDiscount">−৳0</span></div>
+        <div class="row"><span>ডেলিভারি চার্জ</span><span id="sumDelivery">৳0</span></div>
+        <div class="row total"><span>টোটাল</span><span id="sumTotal">৳0</span></div>
+      </div>
+
+      <div class="form-error" id="formError">⚠️ সব তথ্য সঠিকভাবে পূরণ করুন (মোবাইল নম্বর ১১ ডিজিটের হতে হবে)</div>
+
+      <button class="submit-btn" onclick="submitOrder()">🛒 অর্ডার করুন — <span id="submitTotal">৳0</span></button>
+      <p style="font-size:12px; color:var(--muted); margin-top:8px; text-align:center">
+        অর্ডার দিলে আমাদের টিম কল দিয়ে কনফার্ম করবে ইনশাআল্লাহ
+      </p>
+
+      <div class="confirm-box" id="confirmBox">
+        <h2>🎉 অর্ডার সফল হয়েছে!</h2>
+        <p>আপনার অর্ডার আমরা পেয়েছি। শীঘ্রই আমাদের প্রতিনিধি কল দিয়ে কনফার্ম করবে।<br>WhatsApp চালু করে অর্ডার মেসেজটি পাঠিয়ে দিন।</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="products.js?v=3"></script>
   <script>
-    // ---- Fill shop info ----
+    // ---- Shop info ----
     document.getElementById("logoLetter").textContent = SETTINGS.shopName.charAt(0);
     if (SETTINGS.logo) document.getElementById("logoImg").src = SETTINGS.logo;
     document.getElementById("brandName").innerHTML = SETTINGS.shopName + "<small>ভরসাই আমাদের পুঁজি</small>";
@@ -165,22 +180,46 @@
     document.getElementById("advBkash").textContent = "bKash: " + SETTINGS.bkash;
     document.getElementById("advNagad").textContent = "Nagad: " + SETTINGS.nagad;
     document.getElementById("discLabel").textContent = "🎁 " + SETTINGS.advanceDiscountPercent + "% ছাড়";
+    document.querySelector(".disc-inline").textContent = SETTINGS.advanceDiscountPercent + "% ছাড়";
 
-    // ---- Load product from URL ----
+    // ---- Product ----
     const params = new URLSearchParams(location.search);
     const product = PRODUCTS.find(p => p.id === params.get("id")) || PRODUCTS[0];
 
     document.title = product.name + " — " + SETTINGS.shopName;
     document.getElementById("thumbEmoji").textContent = product.emoji;
+    document.getElementById("mEmoji").textContent = product.emoji;
     const img = document.getElementById("thumbImg");
     img.src = product.image; img.alt = product.name;
+    const mimg = document.getElementById("mImg"); mimg.src = product.image;
     document.getElementById("pName").textContent = product.name;
     document.getElementById("pNameBn").textContent = product.nameBn;
     document.getElementById("pPrice").textContent = "৳" + product.price;
+    document.getElementById("mPrice").textContent = "৳" + product.price;
+    document.getElementById("buyPrice").textContent = "৳" + product.price;
     document.getElementById("pOldPrice").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
+    document.getElementById("mOld").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
     document.getElementById("pSave").textContent = product.oldPrice
       ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) + "% ছাড়" : "";
     document.getElementById("pDesc").textContent = product.desc;
+    document.getElementById("mName").textContent = product.name + " (" + product.nameBn + ")";
+
+    // ---- All 64 districts ----
+    const DISTRICTS = ["ঢাকা","গাজীপুর","নারায়ণগঞ্জ","নরসিংদী","মানিকগঞ্জ","মুন্সিগঞ্জ","টাঙ্গাইল","কিশোরগঞ্জ","ফরিদপুর","মাদারীপুর","গোপালগঞ্জ","শরীয়তপুর","রাজবাড়ী","বগুড়া","জয়পুরহাট","নওগাঁ","নাটোর","পাবনা","সিরাজগঞ্জ","রাজশাহী","দিনাজপুর","গাইবান্ধা","কুড়িগ্রাম","লালমনিরহাট","নীলফামারী","পঞ্চগড়","রংপুর","ঠাকুরগাঁও","বরগুনা","বরিশাল","ভোলা","ঝালকাঠি","পটুয়াখালী","পিরোজপুর","বান্দরবান","ব্রাহ্মণবাড়িয়া","চাঁদপুর","চট্টগ্রাম","কুমিল্লা","কক্সবাজার","ফেনী","খাগড়াছড়ি","লক্ষ্মীপুর","নোয়াখালী","রাঙামাটি","বাগেরহাট","চুয়াডাঙ্গা","যশোর","ঝিনাইদহ","খুলনা","কুষ্টিয়া","মাগুরা","মেহেরপুর","নড়াইল","সাতক্ষীরা","জামালপুর","ময়মনসিংহ","নেত্রকোনা","শেরপুর","হবিগঞ্জ","মৌলভীবাজার","সুনামগঞ্জ","সিলেট"];
+    const sel = document.getElementById("fDistrict");
+    sel.innerHTML = "<option value=''>আপনার জেলা সিলেক্ট করুন</option>" +
+      DISTRICTS.map(d => `<option value="${d}">${d}</option>`).join("");
+
+    // ---- Modal ----
+    function openModal() {
+      document.getElementById("modalOverlay").classList.add("show");
+      document.body.style.overflow = "hidden";
+      calc();
+    }
+    function closeModal() {
+      document.getElementById("modalOverlay").classList.remove("show");
+      document.body.style.overflow = "";
+    }
 
     // ---- Qty ----
     function changeQty(d) {
@@ -189,59 +228,60 @@
       calc();
     }
 
-    // ---- Price calculation ----
+    // ---- Payment ----
+    function payChange() {
+      const v = document.querySelector('input[name="pay"]:checked').value;
+      document.getElementById("optCod").classList.toggle("active", v === "cod");
+      document.getElementById("optAdvance").classList.toggle("active", v === "advance");
+      document.getElementById("advanceInfo").classList.toggle("show", v === "advance");
+      calc();
+    }
+
+    // ---- Calculate ----
     function calc() {
       const qty = Math.max(1, parseInt(document.getElementById("qty").value) || 1);
-      const area = document.getElementById("fArea").value;
+      const district = document.getElementById("fDistrict").value;
       const isAdvance = document.querySelector('input[name="pay"]:checked').value === "advance";
 
       const sub = product.price * qty;
-      const delivery = (area === "inside") ? SETTINGS.deliveryInsideDhaka : SETTINGS.deliveryOutsideDhaka;
-      let discount = 0;
-      if (isAdvance && SETTINGS.advanceDiscountPercent > 0) {
-        discount = Math.round(sub * SETTINGS.advanceDiscountPercent / 100);
-      }
+      let discount = isAdvance ? Math.round(sub * SETTINGS.advanceDiscountPercent / 100) : 0;
+      let del = 0;
+      if (district) del = (district === "ঢাকা") ? SETTINGS.deliveryInsideDhaka : SETTINGS.deliveryOutsideDhaka;
       let total = sub - discount;
-      let del = delivery;
       if (SETTINGS.freeDeliveryOver > 0 && total >= SETTINGS.freeDeliveryOver) del = 0;
       total += del;
 
-      document.getElementById("sumQty").textContent = qty;
+      document.getElementById("areaNote").textContent = district
+        ? ((district === "ঢাকা")
+          ? "🏙️ ঢাকার ভিতরে — ডেলিভারি চার্জ ৳" + (SETTINGS.freeDeliveryOver > 0 && sub - discount >= SETTINGS.freeDeliveryOver ? 0 : SETTINGS.deliveryInsideDhaka)
+          : "🏜️ " + district + " (ঢাকার বাইরে) — ডেলিভারি চার্জ ৳" + (SETTINGS.freeDeliveryOver > 0 && sub - discount >= SETTINGS.freeDeliveryOver ? 0 : SETTINGS.deliveryOutsideDhaka))
+        : "🚚 জেলা সিলেক্ট করলে ডেলিভারি চার্জ দেখা যাবে";
+
       document.getElementById("sumSub").textContent = "৳" + sub;
       document.getElementById("rowDiscount").style.display = discount ? "flex" : "none";
       document.getElementById("sumDiscount").textContent = "−৳" + discount;
-      document.getElementById("sumDelivery").textContent = del === 0 ? "ফ্রি 🎉" : "৳" + del;
+      document.getElementById("sumDelivery").textContent = district ? (del === 0 ? "ফ্রি 🎉" : "৳" + del) : "—";
       document.getElementById("sumTotal").textContent = "৳" + total;
-      return { qty, sub, discount, del, total, isAdvance };
+      document.getElementById("submitTotal").textContent = "৳" + total;
+      return { qty, sub, discount, del, total, isAdvance, district };
     }
-
-    // ---- Payment option highlight ----
-    document.querySelectorAll('input[name="pay"]').forEach(r => {
-      r.addEventListener("change", () => {
-        document.getElementById("optCod").classList.toggle("active", r.value === "cod" && r.checked);
-        document.getElementById("optAdvance").classList.toggle("active", r.value === "advance" && r.checked);
-        document.getElementById("advanceInfo").classList.toggle("show", r.value === "advance" && r.checked);
-        calc();
-      });
-    });
 
     // ---- Submit → WhatsApp ----
     function submitOrder() {
       const name = document.getElementById("fName").value.trim();
       const phone = document.getElementById("fPhone").value.trim();
       const address = document.getElementById("fAddress").value.trim();
-      const area = document.getElementById("fArea").value;
       const trx = document.getElementById("fTrx").value.trim();
       const c = calc();
 
       const phoneOk = /^01[3-9]\d{8}$/.test(phone);
-      if (!name || !phoneOk || !address) {
+      if (!name || !phoneOk || !address || !c.district) {
         document.getElementById("formError").classList.add("show");
         return;
       }
       document.getElementById("formError").classList.remove("show");
 
-      const areaText = area === "inside" ? "ঢাকার ভিতরে" : "ঢাকার বাইরে";
+      const areaText = c.district === "ঢাকা" ? "ঢাকার ভিতরে" : c.district + " (ঢাকার বাইরে)";
       const payText = c.isAdvance
         ? `bKash/Nagad অ্যাডভান্স (TrxID: ${trx || "দেওয়া হয়নি"})`
         : "ক্যাশ অন ডেলিভারি";
