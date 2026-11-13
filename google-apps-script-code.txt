@@ -1,0 +1,72 @@
+// =====================================================
+//  Online Hat — Order Book (Google Apps Script)
+//  এই কোডটা Google Sheet এর Apps Script এ পেস্ট করবেন।
+//  (Extensions → Apps Script)
+// =====================================================
+
+// ⬇️ এই KEY টা বদলে নিজের secret দিন (Admin Panel এর অর্ডার বুক ট্যাবে একইটা দিবেন)
+const ADMIN_KEY = 'my-secret-123';
+
+const SHEET_NAME = 'Orders';
+
+// ---------- অর্ডার জমা নেয় (ওয়েবসাইট থেকে অটো আসে) ----------
+function doPost(e) {
+  try {
+    const d = JSON.parse(e.postData.contents);
+
+    // honeypot: বট ভরলে বাদ
+    if (d.website) return json({ ok: false });
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName(SHEET_NAME);
+    if (!sh) sh = ss.insertSheet(SHEET_NAME);
+
+    if (sh.getLastRow() === 0) {
+      sh.appendRow(['Time', 'Name', 'Phone', 'Address', 'District', 'Product', 'Qty', 'Payment', 'TrxID', 'Total', 'Status']);
+      sh.getRange('A1:K1').setFontWeight('bold').setBackground('#C9103E').setFontColor('#FFFFFF');
+      sh.setFrozenRows(1);
+    }
+
+    sh.appendRow([
+      new Date(),
+      d.name || '',
+      d.phone || '',
+      d.address || '',
+      d.district || '',
+      d.product || '',
+      d.qty || 1,
+      d.payment || '',
+      d.trx || '',
+      d.total || 0,
+      'নতুন'   // আপনি নিজে এই কলাম এডিট করে 'কনফার্মড' / 'শিপড' / 'ডেলিভারড' লিখবেন
+    ]);
+
+    return json({ ok: true });
+  } catch (err) {
+    return json({ ok: false, error: String(err) });
+  }
+}
+
+// ---------- Admin Panel অর্ডার পড়ে (key ছাড়া কেউ পারবে না) ----------
+function doGet(e) {
+  if (e.parameter.key !== ADMIN_KEY) return json({ error: 'unauthorized' });
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh || sh.getLastRow() < 2) return json({ orders: [] });
+
+  const rows = sh.getDataRange().getValues();
+  const head = rows.shift();
+  const orders = rows.reverse().slice(0, 100).map(r => {
+    const o = {};
+    head.forEach((h, i) => o[h] = r[i]);
+    return o;
+  });
+
+  return json({ orders: orders });
+}
+
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
