@@ -122,8 +122,9 @@
     <a class="sticky-order" href="#productGrid">🛍️ অর্ডার করুন</a>
   </div>
 
-  <script src="products.js?v=5"></script>
+  <script src="products.js?v=7"></script>
   <script>
+    function bootShop() {
     // ---- Fill shop info everywhere ----
     document.title = SETTINGS.shopName + " — অথেনটিক প্রোডাক্ট সেরা দামে | সারা বাংলাদেশে হোম ডেলিভারি";
     const logoImg = document.getElementById("logoImg");
@@ -169,6 +170,8 @@
         </div>
       </div>`;
     }).join("");
+    }
+    loadShopData(bootShop);
   </script>
 </body>
 </html>
