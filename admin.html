@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Online Hat</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧢</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=6">
+  <style>
+    .admin-wrap { max-width: 1000px; margin: 0 auto; padding: 20px 16px 60px; }
+    .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
+    .admin-tabs button {
+      padding: 10px 18px; border: 2px solid var(--border); background: #fff;
+      border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer;
+      font-family: inherit; color: var(--navy);
+    }
+    .admin-tabs button.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+    .tabpane { display: none; }
+    .tabpane.show { display: block; }
+    .panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+    .panel h3 { color: var(--navy); margin-bottom: 12px; }
+    .prod-item { border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; background: #FDFBFF; }
+    .prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 600px) { .prod-grid { grid-template-columns: 1fr; } }
+    .btn {
+      display: inline-block; background: var(--accent); color: #fff; border: none;
+      padding: 11px 20px; border-radius: 10px; font-weight: 800; font-size: 15px;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn.green { background: var(--green); }
+    .btn.gray { background: var(--navy); }
+    .btn.red { background: #DC2626; }
+    .btn.small { padding: 7px 14px; font-size: 13px; }
+    .status-msg { font-weight: 700; font-size: 14px; margin-top: 10px; display: none; }
+    .status-msg.show { display: block; }
+    .orders-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .orders-table th, .orders-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .orders-table th { background: var(--accent-soft); color: var(--accent-dark); }
+    .orders-table tr:nth-child(even) { background: #FAFAFC; }
+    .table-scroll { overflow-x: auto; }
+    .gate-box { max-width: 420px; margin: 40px auto; text-align: center; }
+    .guide pre {
+      background: #0F172A; color: #E2E8F0; padding: 14px; border-radius: 10px;
+      font-size: 12px; overflow-x: auto; line-height: 1.5; text-align: left;
+    }
+    .guide ol { padding-left: 20px; text-align: left; }
+    .guide ol li { margin-bottom: 8px; }
+    .hint { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header class="site">
+    <div class="site-inner">
+      <a class="brand" href="index.html">
+        <div class="brand-logo" id="logoWrap">
+          <svg class="logo-fallback" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 21 Q20 9 31 9 Q42 9 42 21 Z" fill="#fff"/>
+            <ellipse cx="31" cy="22" rx="17" ry="4.5" fill="#fff"/>
+            <circle cx="26" cy="36" r="11" fill="none" stroke="#fff" stroke-width="5"/>
+            <path d="M33 43 L39 51" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+            <path d="M37 45 L52 27" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+            <path d="M56 20 L45 22 L53 32 Z" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="brand-name">Admin Panel<small>Online Hat কন্ট্রোল রুম</small></div>
+      </a>
+      <a class="call-btn" href="index.html" style="background:var(--navy)">🌐 সাইট দেখুন</a>
+    </div>
+  </header>
+
+  <div class="admin-wrap">
+
+    <!-- ===== PIN GATE ===== -->
+    <div class="panel gate-box" id="gate">
+      <h3>🔐 Admin লগইন</h3>
+      <div id="gateSetup" style="display:none">
+        <p class="hint">প্রথমবার — নতুন PIN সেট করুন (এই ডিভাইসে সেভ হবে)</p>
+        <div class="field"><input id="pinNew" type="password" placeholder="নতুন PIN (৪+ ডিজিট)"></div>
+        <div class="field"><input id="pinNew2" type="password" placeholder="আবার লিখুন"></div>
+        <button class="btn" onclick="setPin()">PIN সেট করুন</button>
+      </div>
+      <div id="gateEnter" style="display:none">
+        <div class="field"><input id="pinEnter" type="password" placeholder="আপনার PIN দিন"></div>
+        <button class="btn" onclick="checkPin()">প্রবেশ করুন</button>
+        <p class="hint" style="margin-top:10px"><a href="#" onclick="resetPin()">PIN ভুলে গেছেন?</a></p>
+      </div>
+      <div class="status-msg" id="gateMsg"></div>
+    </div>
+
+    <!-- ===== APP ===== -->
+    <div id="app" style="display:none">
+      <div class="admin-tabs">
+        <button class="active" data-tab="orders" onclick="showTab('orders')">📋 অর্ডার বুক</button>
+        <button data-tab="products" onclick="showTab('products')">📦 প্রোডাক্ট</button>
+        <button data-tab="settings" onclick="showTab('settings')">⚙️ সেটিংস</button>
+        <button data-tab="coupons" onclick="showTab('coupons')">🎟️ কুপন</button>
+        <button data-tab="guide" onclick="showTab('guide')">📖 সেটআপ গাইড</button>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="tabpane show" id="tab-orders">
+        <div class="panel">
+          <h3>📋 অর্ডার বুক — সব অর্ডার এখানে জমা হয়</h3>
+          <div class="field"><label>Google Apps Script URL</label><input id="ordUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+          <div class="field"><label>Secret Key (Apps Script এ যেটা বসিয়েছেন)</label><input id="ordKey" placeholder="যেমন: my-secret-123"></div>
+          <button class="btn small gray" onclick="saveOrderCreds()">সেভ করুন</button>
+          <button class="btn small green" onclick="loadOrders()">🔄 অর্ডার লোড করুন</button>
+          <div class="status-msg" id="ordersMsg"></div>
+          <div class="table-scroll" id="ordersTable" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="tabpane" id="tab-products">
+        <div class="panel">
+          <h3>📦 প্রোডাক্ট ম্যানেজার</h3>
+          <div id="prodList"></div>
+          <button class="btn small gray" onclick="addProduct()">➕ নতুন প্রোডাক্ট</button>
+          <button class="btn green" onclick="saveProducts()">💾 পাবলিশ করুন (সাইটে লাইভ হবে)</button>
+          <div class="status-msg" id="prodMsg"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tabpane" id="tab-settings">
+        <div class="panel">
+          <h3>⚙️ সাইট সেটিংস</h3>
+          <div class="prod-grid">
+            <div class="field"><label>শপের নাম</label><input id="s_shopName"></div>
+            <div class="field"><label>ট্যাগলাইন (হোমপেজে দেখাবে)</label><input id="s_tagline"></div>
+            <div class="field"><label>📞 কল নম্বর</label><input id="s_phone"></div>
+            <div class="field"><label>💬 WhatsApp (880XXXXXXXXXX)</label><input id="s_whatsapp"></div>
+            <div class="field"><label>💰 bKash নম্বর</label><input id="s_bkash"></div>
+            <div class="field"><label>💰 Nagad নম্বর</label><input id="s_nagad"></div>
+            <div class="field"><label>🎁 অ্যাডভান্স ডিসকাউন্ট (%)</label><input id="s_advanceDiscountPercent" type="number" min="0" max="50"></div>
+            <div class="field"><label>🚚 ডেলিভারি ঢাকার ভিতরে (৳)</label><input id="s_deliveryInsideDhaka" type="number"></div>
+            <div class="field"><label>🚚 ডেলিভারি ঢাকার বাইরে (৳)</label><input id="s_deliveryOutsideDhaka" type="number"></div>
+            <div class="field"><label>🎉 এই টাকার উপরে ফ্রি ডেলিভারি (0 = বন্ধ)</label><input id="s_freeDeliveryOver" type="number"></div>
+            <div class="field"><label>🖼️ লোগো ফাইলের নাম</label><input id="s_logo"></div>
+            <div class="field"><label>🔗 Google Apps Script URL (অর্ডার সেভ)</label><input id="s_orderEndpoint"></div>
+          </div>
+          <button class="btn green" onclick="saveSettings()">💾 পাবলিশ করুন</button>
+          <div class="status-msg" id="setMsg"></div>
+        </div>
+      </div>
+
+      <!-- COUPONS -->
+      <div class="tabpane" id="tab-coupons">
+        <div class="panel">
+          <h3>🎟️ ডিসকাউন্ট কুপন</h3>
+          <p class="hint">কাস্টমার চেকআউটে কোড দিলে ডিসকাউন্ট পাবে। রিল/পোস্টে কোড ছড়িয়ে দিন!</p>
+          <div id="couponList"></div>
+          <button class="btn small gray" onclick="addCouponRow()">➕ নতুন কুপন</button>
+          <button class="btn green" onclick="saveCoupons()">💾 পাবলিশ করুন</button>
+          <div class="status-msg" id="coupMsg"></div>
+        </div>
+      </div>
+
+      <!-- GUIDE -->
+      <div class="tabpane" id="tab-guide">
+        <div class="panel guide">
+          <h3>📖 সেটআপ গাইড (একবার করলেই হবে)</h3>
+
+          <h3>১️⃣ GitHub Token</h3>
+          <ol>
+            <li>যান: <b>github.com/settings/personal-access-tokens/new</b></li>
+            <li>Repository access: <b>Only select repositories</b> → <b>online-hat</b></li>
+            <li>Permissions → Repository → <b>Contents: Read and write</b></li>
+            <li>Generate করে নিচে পেস্ট করুন:</li>
+          </ol>
+          <div class="field"><input id="ghToken" placeholder="github_pat_..."></div>
+          <button class="btn small" onclick="saveToken()">Token সেভ করুন</button>
+          <div class="status-msg" id="tokenMsg"></div>
+
+          <h3 style="margin-top:20px">২️⃣ অর্ডার বুক (Google Sheet)</h3>
+          <ol>
+            <li><b>sheets.new</b> খুলুন → নাম দিন "Online Hat Orders"</li>
+            <li>মেনু: Extensions → <b>Apps Script</b></li>
+            <li>আগের কোড মুছে <b>google-apps-script-code.txt</b> ফাইলের পুরো কোড পেস্ট করুন</li>
+            <li>কোডের প্রথম লাইনে <b>ADMIN_KEY</b> বদলে নিজের secret দিন</li>
+            <li>Deploy → New deployment → Type: <b>Web app</b> → Execute as: <b>Me</b> → Who has access: <b>Anyone</b> → Deploy</li>
+            <li>Permission allow করুন → যে <b>Web app URL</b> পাবেন সেটা কপি করুন</li>
+            <li>URL টা 📋 অর্ডার বুক ট্যাব ও ⚙️ সেটিংস ট্যাবে বসিয়ে সেভ করুন</li>
+          </ol>
+          <p class="hint">এরপর থেকে প্রতিটা অর্ডার অটো Google Sheet এ জমা হবে — ফোনে Sheets অ্যাপ দিয়ে যেকোনো সময় দেখবেন। WhatsApp ব্যাকআপ হিসেবে আগের মতোই থাকবে।</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site"><div class="container">
+    <p class="copy">Admin Panel — এই পেজ শুধু আপনার জন্য (Google এ index হয় না)</p>
+  </div></footer>
+
+<script>
+const REPO = "habibur20499-art/online-hat";
+
+// ---------- helpers ----------
+function b64utf8(b){ const bin = atob(b.replace(/\s/g,"")); const arr = Uint8Array.from(bin, c => c.charCodeAt(0)); return new TextDecoder().decode(arr); }
+function utf8b64(s){ const bytes = new TextEncoder().encode(s); let bin = ""; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); }
+function showMsg(id, text, ok){ const el = document.getElementById(id); el.textContent = text; el.style.color = ok ? "var(--green)" : "#DC2626"; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"), 6000); }
+
+// ---------- PIN gate ----------
+function initGate(){
+  const pin = localStorage.getItem("oh_pin");
+  if (pin) { document.getElementById("gateEnter").style.display = "block"; }
+  else { document.getElementById("gateSetup").style.display = "block"; }
+}
+function setPin(){
+  const p1 = document.getElementById("pinNew").value.trim();
+  const p2 = document.getElementById("pinNew2").value.trim();
+  if (p1.length < 4) return showMsg("gateMsg", "⚠️ কম ৪ ডিজিটের PIN দিন", false);
+  if (p1 !== p2) return showMsg("gateMsg", "⚠️ দুইবার একই PIN লিখুন", false);
+  localStorage.setItem("oh_pin", p1);
+  openApp();
+}
+function checkPin(){
+  const v = document.getElementById("pinEnter").value.trim();
+  if (v === localStorage.getItem("oh_pin")) openApp();
+  else showMsg("gateMsg", "❌ ভুল PIN", false);
+}
+function resetPin(){ localStorage.removeItem("oh_pin"); location.reload(); }
+function openApp(){
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  loadAll();
+}
+
+// ---------- GitHub API ----------
+function getToken(){ return localStorage.getItem("oh_token") || ""; }
+function api(path, opts = {}){
+  return fetch("https://api.github.com/repos/" + REPO + "/contents/" + path + "?t=" + Date.now(), {
+    headers: { "Authorization": "Bearer " + getToken(), "Accept": "application/vnd.github+json" },
+    ...opts
+  });
+}
+async function getJSON(name){
+  const r = await api(name);
+  if (r.status === 404) return { sha: null, data: null };
+  if (!r.ok) throw new Error("GitHub error " + r.status + " — token ঠিক আছে কিনা দেখুন");
+  const j = await r.json();
+  return { sha: j.sha, data: JSON.parse(b64utf8(j.content)) };
+}
+async function putJSON(name, data, msg){
+  const { sha } = await getJSON(name);
+  const body = { message: msg || ("Admin update " + name), content: utf8b64(JSON.stringify(data, null, 2)) };
+  if (sha) body.sha = sha;
+  const r = await api(name, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+}
+
+// ---------- tabs ----------
+function showTab(name){
+  document.querySelectorAll(".admin-tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".tabpane").forEach(p => p.classList.toggle("show", p.id === "tab-" + name));
+}
+
+// ---------- data ----------
+let S = {}, P = [], C = [];
+async function loadAll(){
+  try {
+    const [s, p, c] = await Promise.all([getJSON("settings.json"), getJSON("products.json"), getJSON("coupons.json")]);
+    S = s.data || {}; P = (p.data && p.data.products) || []; C = c.data || [];
+    fillSettings(); renderProducts(); renderCoupons();
+  } catch (e) { showMsg("setMsg", "⚠️ লোড করতে সমস্যা: " + e.message, false); }
+  // order creds
+  document.getElementById("ordUrl").value = localStorage.getItem("oh_orders_url") || "";
+  document.getElementById("ordKey").value = localStorage.getItem("oh_orders_key") || "";
+  document.getElementById("ghToken").value = getToken();
+}
+
+// ---------- settings ----------
+const SETTING_FIELDS = ["shopName","tagline","phone","whatsapp","bkash","nagad","advanceDiscountPercent","deliveryInsideDhaka","deliveryOutsideDhaka","freeDeliveryOver","logo","orderEndpoint"];
+function fillSettings(){
+  SETTING_FIELDS.forEach(k => { const el = document.getElementById("s_" + k); if (el) el.value = S[k] !== undefined ? S[k] : ""; });
+}
+async function saveSettings(){
+  try {
+    SETTING_FIELDS.forEach(k => {
+      const el = document.getElementById("s_" + k);
+      if (!el) return;
+      S[k] = (["advanceDiscountPercent","deliveryInsideDhaka","deliveryOutsideDhaka","freeDeliveryOver"].includes(k)) ? (Number(el.value) || 0) : el.value;
+    });
+    await putJSON("settings.json", S);
+    showMsg("setMsg", "✅ পাবলিশ হয়েছে! ১–২ মিনিটে সাইটে লাইভ হবে।", true);
+  } catch (e) { showMsg("setMsg", "❌ " + e.message, false); }
+}
+
+// ---------- products ----------
+function renderProducts(){
+  const box = document.getElementById("prodList");
+  box.innerHTML = P.map((p, i) => `
+    <div class="prod-item" data-i="${i}">
+      <div class="prod-grid">
+        <div class="field"><label>নাম (English)</label><input class="pf" data-k="name" value="${esc(p.name)}"></div>
+        <div class="field"><label>বাংলা নাম</label><input class="pf" data-k="nameBn" value="${esc(p.nameBn)}"></div>
+        <div class="field"><label>দাম (৳)</label><input class="pf" data-k="price" type="number" value="${p.price}"></div>
+        <div class="field"><label>কাটা দাম (০ = নাই)</label><input class="pf" data-k="oldPrice" type="number" value="${p.oldPrice || 0}"></div>
+        <div class="field"><label>ছবির ফাইল (যেমন images/p1.jpg)</label><input class="pf" data-k="image" value="${esc(p.image)}"></div>
+        <div class="field"><label>Emoji (ছবি না থাকলে)</label><input class="pf" data-k="emoji" value="${esc(p.emoji || "")}"></div>
+        <div class="field"><label>Badge (Best Seller/New ইত্যাদি)</label><input class="pf" data-k="badge" value="${esc(p.badge || "")}"></div>
+        <div class="field"><label>ID (ইউনিক, যেমন p7)</label><input class="pf" data-k="id" value="${esc(p.id)}"></div>
+      </div>
+      <div class="field"><label>বর্ণনা</label><textarea class="pf" data-k="desc" rows="2">${esc(p.desc || "")}</textarea></div>
+      <button class="btn small red" onclick="delProduct(${i})">🗑️ ডিলিট</button>
+    </div>`).join("");
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function addProduct(){
+  P.push({ id: "p" + Date.now(), name: "নতুন প্রোডাক্ট", nameBn: "", price: 0, oldPrice: 0, image: "", emoji: "🛍️", badge: "New", desc: "" });
+  renderProducts();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+function delProduct(i){ if (confirm("এই প্রোডাক্ট ডিলিট করবেন?")) { P.splice(i, 1); renderProducts(); } }
+async function saveProducts(){
+  try {
+    document.querySelectorAll("#prodList .prod-item").forEach(item => {
+      const i = Number(item.dataset.i);
+      item.querySelectorAll(".pf").forEach(inp => {
+        const k = inp.dataset.k;
+        P[i][k] = (k === "price" || k === "oldPrice") ? (Number(inp.value) || 0) : inp.value;
+      });
+      if (!P[i].oldPrice) P[i].oldPrice = 0;
+    });
+    await putJSON("products.json", { updated: new Date().toISOString().slice(0,10), products: P });
+    showMsg("prodMsg", "✅ পাবলিশ হয়েছে! ১–২ মিনিটে সাইটে লাইভ হবে।", true);
+  } catch (e) { showMsg("prodMsg", "❌ " + e.message, false); }
+}
+
+// ---------- coupons ----------
+function renderCoupons(){
+  const box = document.getElementById("couponList");
+  box.innerHTML = C.map((c, i) => `
+    <div class="prod-item" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end">
+      <div class="field" style="flex:1; min-width:120px; margin:0"><label>কোড</label><input class="cf" data-i="${i}" data-k="code" value="${esc(c.code || "")}"></div>
+      <div class="field" style="margin:0"><label>টাইপ</label>
+        <select class="cf" data-i="${i}" data-k="type">
+          <option value="percent" ${c.type === "percent" ? "selected" : ""}>% (শতাংশ)</option>
+          <option value="flat" ${c.type === "flat" ? "selected" : ""}>৳ (ফিক্সড)</option>
+        </select></div>
+      <div class="field" style="width:110px; margin:0"><label>মান</label><input class="cf" data-i="${i}" data-k="value" type="number" value="${c.value || 0}"></div>
+      <label style="font-size:13px; font-weight:700; padding-bottom:10px"><input class="cf" data-i="${i}" data-k="active" type="checkbox" ${c.active !== false ? "checked" : ""}> চালু</label>
+      <button class="btn small red" onclick="delCoupon(${i})">🗑️</button>
+    </div>`).join("");
+}
+function addCouponRow(){ C.push({ code: "NEW" + Math.floor(Math.random()*900+100), type: "percent", value: 10, active: true }); renderCoupons(); }
+function delCoupon(i){ C.splice(i, 1); renderCoupons(); }
+async function saveCoupons(){
+  try {
+    document.querySelectorAll("#couponList .cf").forEach(inp => {
+      const i = Number(inp.dataset.i), k = inp.dataset.k;
+      if (k === "active") C[i].active = inp.checked;
+      else if (k === "value") C[i].value = Number(inp.value) || 0;
+      else C[i][k] = inp.value;
+    });
+    await putJSON("coupons.json", C);
+    showMsg("coupMsg", "✅ কুপন পাবলিশ হয়েছে!", true);
+  } catch (e) { showMsg("coupMsg", "❌ " + e.message, false); }
+}
+
+// ---------- orders ----------
+function saveOrderCreds(){
+  localStorage.setItem("oh_orders_url", document.getElementById("ordUrl").value.trim());
+  localStorage.setItem("oh_orders_key", document.getElementById("ordKey").value.trim());
+  showMsg("ordersMsg", "✅ সেভ হয়েছে", true);
+}
+async function loadOrders(){
+  const url = localStorage.getItem("oh_orders_url");
+  const key = localStorage.getItem("oh_orders_key");
+  if (!url) return showMsg("ordersMsg", "⚠️ আগে Apps Script URL ও Key বসিয়ে সেভ করুন (📖 গাইড দেখুন)", false);
+  showMsg("ordersMsg", "⏳ লোড হচ্ছে...", true);
+  try {
+    const r = await fetch(url + "?action=list&key=" + encodeURIComponent(key || ""));
+    const j = await r.json();
+    const orders = j.orders || [];
+    if (!orders.length) { document.getElementById("ordersTable").innerHTML = "<p class='hint'>এখনো কোনো অর্ডার আসেনি।</p>"; showMsg("ordersMsg", "✅ ০টা অর্ডার", true); return; }
+    document.getElementById("ordersTable").innerHTML = `
+      <table class="orders-table">
+        <tr><th>সময়</th><th>নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>জেলা</th><th>প্রোডাক্ট</th><th>পরিমাণ</th><th>পেমেন্ট</th><th>মোট</th><th>স্ট্যাটাস</th></tr>
+        ${orders.map(o => `<tr>
+          <td>${new Date(o.Time).toLocaleString("bn-BD")}</td>
+          <td>${esc(o.Name)}</td><td><a href="tel:${esc(o.Phone)}">${esc(o.Phone)}</a></td>
+          <td>${esc(o.Address)}</td><td>${esc(o.District)}</td><td>${esc(o.Product)}</td>
+          <td>${esc(o.Qty)}</td><td>${esc(o.Payment)}</td><td><b>৳${esc(o.Total)}</b></td>
+          <td>${esc(o.Status)}</td></tr>`).join("")}
+      </table>`;
+    showMsg("ordersMsg", "✅ " + orders.length + " টা অর্ডার দেখানো হচ্ছে (নতুন আগে)", true);
+  } catch (e) { showMsg("ordersMsg", "❌ লোড করা যায়নি — URL/Key চেক করুন", false); }
+}
+
+// ---------- token ----------
+function saveToken(){
+  const t = document.getElementById("ghToken").value.trim();
+  localStorage.setItem("oh_token", t);
+  showMsg("tokenMsg", t ? "✅ Token সেভ হয়েছে (এই ব্রাউজারে)" : "Token মুছে গেছে", !!t);
+}
+
+initGate();
+</script>
+</body>
+</html>
