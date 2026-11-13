@@ -1,10 +1,10 @@
-/* ============ Online Hat — Brand Redesign ============
-   Palette from logo: crimson #C9103E, navy #1B2145,
+﻿/* ============ Online Hat — Brand Redesign ============
+   Palette from logo: purple #7C3AED, navy #1B2145,
    soft gray #F4F5F7, white cards                      */
 :root {
-  --accent: #C9103E;
-  --accent-dark: #9E0C30;
-  --accent-soft: #FDF0F3;
+  --accent: #7C3AED;
+  --accent-dark: #5B21B6;
+  --accent-soft: #F5F3FF;
   --navy: #1B2145;
   --navy-2: #2A3159;
   --bg: #F4F5F7;
@@ -53,7 +53,7 @@ header.site {
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(201,16,62,.3);
+  box-shadow: 0 3px 10px rgba(124,58,237,.3);
 }
 .brand-logo img {
   position: absolute;
@@ -73,7 +73,7 @@ header.site {
   font-weight: 700;
   font-size: 14px;
   white-space: nowrap;
-  box-shadow: 0 3px 10px rgba(201,16,62,.25);
+  box-shadow: 0 3px 10px rgba(124,58,237,.25);
 }
 .call-btn:hover { background: var(--accent-dark); }
 
@@ -81,7 +81,7 @@ header.site {
 .hero {
   background:
     radial-gradient(circle at 85% 20%, rgba(255,255,255,.14) 0 60px, transparent 61px),
-    linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 55%, #7A0926 100%);
+    linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 55%, #4C1D95 100%);
   color: #fff;
   padding: 36px 0 32px;
   text-align: center;
@@ -122,7 +122,7 @@ section { padding: 30px 0; }
 .thumb {
   position: relative;
   aspect-ratio: 1/1;
-  background: linear-gradient(135deg, #FDF0F3, #EEF1FB);
+  background: linear-gradient(135deg, #F5F3FF, #EEF1FB);
   display: flex; align-items: center; justify-content: center;
   font-size: 64px;
 }
@@ -133,7 +133,7 @@ section { padding: 30px 0; }
   font-size: 11px; font-weight: 700;
   padding: 3px 10px; border-radius: 999px;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(201,16,62,.35);
+  box-shadow: 0 2px 8px rgba(124,58,237,.35);
 }
 .card-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .card-name { font-weight: 700; font-size: 15px; color: var(--navy); }
@@ -169,7 +169,7 @@ section { padding: 30px 0; }
   width: 34px; height: 34px; margin: 0 auto 8px;
   background: var(--accent); color: #fff; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; font-weight: 800;
-  box-shadow: 0 3px 8px rgba(201,16,62,.3);
+  box-shadow: 0 3px 8px rgba(124,58,237,.3);
 }
 .step h3 { font-size: 15px; color: var(--navy); }
 .step p { font-size: 13px; color: var(--muted); }
@@ -203,7 +203,7 @@ section { padding: 30px 0; }
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
-  background: linear-gradient(135deg, #FDF0F3, #EEF1FB);
+  background: linear-gradient(135deg, #F5F3FF, #EEF1FB);
   display: flex; align-items: center; justify-content: center; font-size: 90px;
   box-shadow: 0 4px 20px rgba(27,33,69,.07);
 }
@@ -227,7 +227,7 @@ section { padding: 30px 0; }
   cursor: pointer;
   margin-top: 16px;
   font-family: inherit;
-  box-shadow: 0 6px 18px rgba(201,16,62,.35);
+  box-shadow: 0 6px 18px rgba(124,58,237,.35);
   transition: transform .15s, background .15s;
 }
 .buy-btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
@@ -280,7 +280,7 @@ section { padding: 30px 0; }
   position: relative;
   width: 56px; height: 56px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #FDF0F3, #EEF1FB);
+  background: linear-gradient(135deg, #F5F3FF, #EEF1FB);
   display: flex; align-items: center; justify-content: center;
   font-size: 28px;
   overflow: hidden;
