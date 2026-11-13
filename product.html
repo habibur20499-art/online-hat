@@ -8,14 +8,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
   <header class="site">
     <div class="site-inner">
       <a class="brand" href="index.html">
-        <div class="brand-logo" id="logoLetter">O</div>
+        <div class="brand-logo" id="logoWrap">
+          <img id="logoImg" src="" alt="logo" onerror="this.remove()">
+          <span id="logoLetter">O</span>
+        </div>
         <div class="brand-name" id="brandName">Online Hat<small>ভরসাই আমাদের পুঁজি</small></div>
       </a>
       <a class="call-btn" id="callBtn" href="#">📞 কল করুন</a>
@@ -147,10 +150,11 @@
     <a class="sticky-order" href="#qty">🛍️ অর্ডার করুন</a>
   </div>
 
-  <script src="products.js"></script>
+  <script src="products.js?v=2"></script>
   <script>
     // ---- Fill shop info ----
     document.getElementById("logoLetter").textContent = SETTINGS.shopName.charAt(0);
+    if (SETTINGS.logo) document.getElementById("logoImg").src = SETTINGS.logo;
     document.getElementById("brandName").innerHTML = SETTINGS.shopName + "<small>ভরসাই আমাদের পুঁজি</small>";
     document.getElementById("footBrand").textContent = SETTINGS.shopName;
     document.getElementById("footBrand2").textContent = SETTINGS.shopName;
