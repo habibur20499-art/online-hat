@@ -108,15 +108,15 @@
 
       <div class="field">
         <label>আপনার নাম *</label>
-        <input id="fName" type="text" placeholder="Full Name">
+        <input id="fName" type="text" placeholder="নাম লিখুন">
       </div>
       <div class="field">
         <label>মোবাইল নাম্বার *</label>
-        <input id="fPhone" type="tel" placeholder="Mobile Number" maxlength="11" inputmode="numeric">
+        <input id="fPhone" type="tel" placeholder="যেমন: 01712345678" maxlength="11" inputmode="numeric">
       </div>
       <div class="field">
-        <label>আপনার কুল ঠিকানা *</label>
-        <textarea id="fAddress" rows="2" placeholder="Full Address"></textarea>
+        <label>🏠 সম্পূর্ণ ঠিকানা *</label>
+        <textarea id="fAddress" rows="2" placeholder="গ্রাম/বাসা/রোড, থানা/উপজেলা — যেমন: মিরপুর ১০, কাজীপাড়া, ঢাকা"></textarea>
       </div>
       <div class="field">
         <label>আপনার জেলা *</label>
@@ -162,7 +162,7 @@
       <div class="field">
         <label>🎟️ ডিসকাউন্ট কোড (থাকলে)</label>
         <div style="display:flex; gap:8px">
-          <input id="fCoupon" placeholder="Discount Code" style="flex:1">
+          <input id="fCoupon" placeholder="কুপন কোড লিখুন (যেমন: EID50)" style="flex:1">
           <button type="button" class="qty-btn" style="width:auto; padding:0 16px" onclick="applyCoupon()">Apply</button>
         </div>
         <div id="couponMsg" style="font-size:13px; font-weight:700; margin-top:4px"></div>
