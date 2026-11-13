@@ -17,6 +17,8 @@ const FALLBACK_SETTINGS = {
   freeDeliveryOver: 0,
   logo: "logo.png",
   orderEndpoint: "",
+  orderEmail: "",
+  firebase: { apiKey: "", databaseURL: "", projectId: "" },
 };
 
 const FALLBACK_PRODUCTS = [
