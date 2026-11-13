@@ -184,7 +184,7 @@
     </div>
   </div>
 
-  <script src="products.js?v=7"></script>
+  <script src="products.js?v=8"></script>
   <script>
     function bootShop() {
     // ---- Shop info ----
@@ -347,7 +347,7 @@ ${c.discount ? "🎁 ডিসকাউন্ট (" + SETTINGS.advanceDiscountPe
 📱 মোবাইল: ${phone}
 🏠 ঠিকানা: ${address}`;
 
-      // ---- অর্ডার বুকে সেভ (Google Sheet) ----
+      // ---- অর্ডার বুকে সেভ (Google Sheet — ঐচ্ছিক ব্যাকআপ) ----
       if (SETTINGS.orderEndpoint) {
         try {
           fetch(SETTINGS.orderEndpoint, {
@@ -369,11 +369,93 @@ ${c.discount ? "🎁 ডিসকাউন্ট (" + SETTINGS.advanceDiscountPe
         } catch (e) {}
       }
 
+      // ---- অর্ডার সেভ (Firebase — Admin Panel এ লাইভ দেখা যায়) ----
+      saveOrderToCloud({
+        name: name,
+        phone: phone,
+        address: address,
+        district: c.district,
+        product: product.name + " (" + product.nameBn + ")",
+        qty: c.qty,
+        payment: payText,
+        trx: trx,
+        total: c.total,
+        status: "নতুন",
+        time: Date.now(),
+        website: document.getElementById("fWebsite").value
+      });
+      emailOrder({
+        name: name,
+        phone: phone,
+        address: address,
+        district: c.district,
+        product: product.name + " (" + product.nameBn + ")",
+        qty: c.qty,
+        payment: payText,
+        trx: trx,
+        total: c.total,
+        website: document.getElementById("fWebsite").value
+      });
+
       const url = "https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent(msg);
       window.open(url, "_blank");
 
       document.getElementById("confirmBox").classList.add("show");
       document.getElementById("confirmBox").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ---- Firebase অর্ডার সেভ (Admin Panel এ লাইভ দেখা যায়) ----
+    let firebaseReady = null;
+    function saveOrderToCloud(order) {
+      const fb = SETTINGS.firebase || {};
+      if (!fb.apiKey || !fb.databaseURL) return; // সেটআপ হয়নি — WhatsApp ব্যাকআপ আছে
+      if (order.website) return; // honeypot ভরা = বট, বাদ
+      if (!firebaseReady) {
+        const inject = (src) => new Promise((res, rej) => {
+          const s = document.createElement("script");
+          s.src = src; s.onload = res; s.onerror = rej;
+          document.head.appendChild(s);
+        });
+        firebaseReady = Promise.all([
+          inject("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"),
+          inject("https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js")
+        ]).then(() => {
+          if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(fb);
+        });
+      }
+      firebaseReady.then(() => {
+        const o = Object.assign({}, order);
+        delete o.website;
+        firebase.database().ref("orders").push(o).catch(() => {});
+      }).catch(() => {});
+    }
+
+    // ---- ইমেইল অর্ডার (Firebase ছাড়াও অর্ডার ইনবক্সে আসবে — FormSubmit ফ্রি সার্ভিস) ----
+    function emailOrder(order) {
+      const em = (SETTINGS.orderEmail || "").trim();
+      if (!em || em.indexOf("@") < 0) return;
+      if (order.website) return;
+      try {
+        fetch("https://formsubmit.co/ajax/" + em, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            _subject: "🛒 নতুন অর্ডার — " + order.name + " (" + SETTINGS.shopName + ")",
+            _template: "table",
+            _captcha: "false",
+            Time: new Date().toLocaleString("en-GB"),
+            Name: order.name,
+            Phone: order.phone,
+            Address: order.address,
+            District: order.district,
+            Product: order.product,
+            Qty: order.qty,
+            Payment: order.payment,
+            TrxID: order.trx || "-",
+            Total: "৳" + order.total
+          })
+        }).catch(() => {});
+      } catch (e) {}
     }
 
     // inline onclick handlers গ্লোবাল স্কোপে খোঁজে — তাই expose করা
