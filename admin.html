@@ -105,13 +105,24 @@
       <!-- ORDERS -->
       <div class="tabpane show" id="tab-orders">
         <div class="panel">
-          <h3>📋 অর্ডার বুক — সব অর্ডার এখানে জমা হয়</h3>
-          <div class="field"><label>Google Apps Script URL</label><input id="ordUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
-          <div class="field"><label>Secret Key (Apps Script এ যেটা বসিয়েছেন)</label><input id="ordKey" placeholder="যেমন: my-secret-123"></div>
-          <button class="btn small gray" onclick="saveOrderCreds()">সেভ করুন</button>
-          <button class="btn small green" onclick="loadOrders()">🔄 অর্ডার লোড করুন</button>
+          <h3>📋 অর্ডার বুক — সব অর্ডার এখানে লাইভ আসে</h3>
+          <div id="fbLoginBox">
+            <p class="hint">Firebase লগইন করুন — তাহলে প্রতিটা অর্ডার রিয়েল-টাইমে এই টেবিলে দেখাবে (📖 সেটআপ গাইড ধাপ ২ এখনো না করে থাকলে আগে সেটা করুন)</p>
+            <div class="prod-grid">
+              <div class="field"><label>📧 Firebase Email</label><input id="fbEmail" type="email" placeholder="আপনার email"></div>
+              <div class="field"><label>🔑 Password</label><input id="fbPass" type="password" placeholder="password"></div>
+            </div>
+            <button class="btn" onclick="fbSignIn()">🔓 লগইন</button>
+          </div>
+          <div id="fbOrderBox" style="display:none">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px">
+              <span id="fbUser" class="hint" style="font-weight:700"></span>
+              <button class="btn small gray" onclick="fbSignOut()">লগআউট</button>
+            </div>
+            <div id="orderStats" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px"></div>
+            <div class="table-scroll" id="ordersTable"></div>
+          </div>
           <div class="status-msg" id="ordersMsg"></div>
-          <div class="table-scroll" id="ordersTable" style="margin-top:14px"></div>
         </div>
       </div>
 
@@ -142,7 +153,11 @@
             <div class="field"><label>🚚 ডেলিভারি ঢাকার বাইরে (৳)</label><input id="s_deliveryOutsideDhaka" type="number"></div>
             <div class="field"><label>🎉 এই টাকার উপরে ফ্রি ডেলিভারি (0 = বন্ধ)</label><input id="s_freeDeliveryOver" type="number"></div>
             <div class="field"><label>🖼️ লোগো ফাইলের নাম</label><input id="s_logo"></div>
-            <div class="field"><label>🔗 Google Apps Script URL (অর্ডার সেভ)</label><input id="s_orderEndpoint"></div>
+            <div class="field"><label>🔗 Google Apps Script URL (ঐচ্ছিক ব্যাকআপ)</label><input id="s_orderEndpoint"></div>
+            <div class="field"><label>📧 অর্ডার ইমেইল (এখানে অর্ডার আসবে — Firebase ছাড়া চালাতে চাইলে)</label><input id="s_orderEmail" placeholder="yourname@gmail.com"></div>
+            <div class="field"><label>🔥 Firebase apiKey</label><input id="s_firebase_apiKey" placeholder="AIza..."></div>
+            <div class="field"><label>🔥 Firebase databaseURL</label><input id="s_firebase_databaseURL" placeholder="https://....firebaseio.com"></div>
+            <div class="field"><label>🔥 Firebase projectId</label><input id="s_firebase_projectId" placeholder="online-hat-xxxx"></div>
           </div>
           <button class="btn green" onclick="saveSettings()">💾 পাবলিশ করুন</button>
           <div class="status-msg" id="setMsg"></div>
@@ -177,17 +192,31 @@
           <button class="btn small" onclick="saveToken()">Token সেভ করুন</button>
           <div class="status-msg" id="tokenMsg"></div>
 
-          <h3 style="margin-top:20px">২️⃣ অর্ডার বুক (Google Sheet)</h3>
+          <h3 style="margin-top:20px">২️⃣ অর্ডার বুক — ২টা উপায় (যেকোনো একটা করলেই হবে)</h3>
+
+          <p style="font-weight:800">🅰️ উপায় ১ (সবচেয়ে সহজ): অর্ডার সরাসরি আপনার ইমেইলে</p>
           <ol>
-            <li><b>sheets.new</b> খুলুন → নাম দিন "Online Hat Orders"</li>
-            <li>মেনু: Extensions → <b>Apps Script</b></li>
-            <li>আগের কোড মুছে <b>google-apps-script-code.txt</b> ফাইলের পুরো কোড পেস্ট করুন</li>
-            <li>কোডের প্রথম লাইনে <b>ADMIN_KEY</b> বদলে নিজের secret দিন</li>
-            <li>Deploy → New deployment → Type: <b>Web app</b> → Execute as: <b>Me</b> → Who has access: <b>Anyone</b> → Deploy</li>
-            <li>Permission allow করুন → যে <b>Web app URL</b> পাবেন সেটা কপি করুন</li>
-            <li>URL টা 📋 অর্ডার বুক ট্যাব ও ⚙️ সেটিংস ট্যাবে বসিয়ে সেভ করুন</li>
+            <li>⚙️ সেটিংস ট্যাবে যান → <b>"অর্ডার ইমেইল"</b> ফিল্ডে আপনার Gmail লিখুন</li>
+            <li><b>পাবলিশ করুন</b> চাপুন — ব্যস!</li>
+            <li>প্রথম অর্ডার আসার পর FormSubmit নামে একটা ফ্রি সার্ভিস <b>activation ইমেইল</b> পাঠাবে → সেটার লিংকে ক্লিক করে নিশ্চিত করুন (একবারই)</li>
+            <li>এরপর প্রতিটা অর্ডার আপনার ইনবক্সে টেবিল আকারে চলে আসবে 📬</li>
           </ol>
-          <p class="hint">এরপর থেকে প্রতিটা অর্ডার অটো Google Sheet এ জমা হবে — ফোনে Sheets অ্যাপ দিয়ে যেকোনো সময় দেখবেন। WhatsApp ব্যাকআপ হিসেবে আগের মতোই থাকবে।</p>
+
+          <p style="font-weight:800; margin-top:14px">🅱️ উপায় ২ (সেরা): Firebase — Admin Panel এ লাইভ অর্ডার টেবিল</p>
+          <ol>
+            <li>যান: <b>console.firebase.google.com</b> → Gmail দিয়ে লগইন → <b>"Create a project"</b> (Analytics বন্ধ রাখতে পারেন)</li>
+            <li>বাম মেনু <b>Build → Realtime Database</b> → <b>Create Database</b> → Location: <b>asia-south1 (Mumbai)</b> → Start in <b>test mode</b> → Enable</li>
+            <li>Database এর <b>Rules</b> ট্যাবে নিচের নিয়মটা বসিয়ে Publish করুন:</li>
+          </ol>
+          <pre>{"rules":{"orders":{".read":"auth != null",".write":true}}}</pre>
+          <ol>
+            <li>বাম মেনু <b>Build → Authentication</b> → Get started → <b>Email/Password</b> চালু করে Save</li>
+            <li>একই পেজে <b>Users → Add user</b> → আপনার email + একটা password দিন (এটাই Admin Panel লগইন)</li>
+            <li>প্রজেক্ট সেটিংস ⚙️ → <b>Your apps → Web (&lt;/&gt; আইকন)</b> → Register app (Firebase Hosting লাগবে না) → স্ক্রিপ্টে দেখা যাবে <b>apiKey</b>, <b>databaseURL</b>, <b>projectId</b> — এই ৩টা মান কপি করুন</li>
+            <li>⚙️ সেটিংস ট্যাবে এই ৩টা মান বসিয়ে <b>পাবলিশ করুন</b></li>
+            <li>📋 অর্ডার বুক ট্যাবে গিয়ে ধাপ ৬ এর email/password দিয়ে লগইন করুন — অর্ডার লাইভ টেবিলে আসা শুরু হবে! 🔴</li>
+          </ol>
+          <p class="hint">দুটোই করলে আরও ভালো — টেবিল + ইমেইল ব্যাকআপ দুটোই পাবেন। টাকা কোনোটায়ই লাগবে না।</p>
         </div>
       </div>
     </div>
@@ -268,16 +297,16 @@ async function loadAll(){
     S = s.data || {}; P = (p.data && p.data.products) || []; C = c.data || [];
     fillSettings(); renderProducts(); renderCoupons();
   } catch (e) { showMsg("setMsg", "⚠️ লোড করতে সমস্যা: " + e.message, false); }
-  // order creds
-  document.getElementById("ordUrl").value = localStorage.getItem("oh_orders_url") || "";
-  document.getElementById("ordKey").value = localStorage.getItem("oh_orders_key") || "";
   document.getElementById("ghToken").value = getToken();
+  initFirebase();
 }
 
 // ---------- settings ----------
-const SETTING_FIELDS = ["shopName","tagline","phone","whatsapp","bkash","nagad","advanceDiscountPercent","deliveryInsideDhaka","deliveryOutsideDhaka","freeDeliveryOver","logo","orderEndpoint"];
+const SETTING_FIELDS = ["shopName","tagline","phone","whatsapp","bkash","nagad","advanceDiscountPercent","deliveryInsideDhaka","deliveryOutsideDhaka","freeDeliveryOver","logo","orderEndpoint","orderEmail"];
+const FB_FIELDS = ["apiKey","databaseURL","projectId"];
 function fillSettings(){
   SETTING_FIELDS.forEach(k => { const el = document.getElementById("s_" + k); if (el) el.value = S[k] !== undefined ? S[k] : ""; });
+  FB_FIELDS.forEach(k => { const el = document.getElementById("s_firebase_" + k); if (el) el.value = (S.firebase && S.firebase[k]) || ""; });
 }
 async function saveSettings(){
   try {
@@ -285,6 +314,11 @@ async function saveSettings(){
       const el = document.getElementById("s_" + k);
       if (!el) return;
       S[k] = (["advanceDiscountPercent","deliveryInsideDhaka","deliveryOutsideDhaka","freeDeliveryOver"].includes(k)) ? (Number(el.value) || 0) : el.value;
+    });
+    S.firebase = S.firebase || {};
+    FB_FIELDS.forEach(k => {
+      const el = document.getElementById("s_firebase_" + k);
+      if (el) S.firebase[k] = el.value.trim();
     });
     await putJSON("settings.json", S);
     showMsg("setMsg", "✅ পাবলিশ হয়েছে! ১–২ মিনিটে সাইটে লাইভ হবে।", true);
@@ -363,34 +397,139 @@ async function saveCoupons(){
   } catch (e) { showMsg("coupMsg", "❌ " + e.message, false); }
 }
 
-// ---------- orders ----------
-function saveOrderCreds(){
-  localStorage.setItem("oh_orders_url", document.getElementById("ordUrl").value.trim());
-  localStorage.setItem("oh_orders_key", document.getElementById("ordKey").value.trim());
-  showMsg("ordersMsg", "✅ সেভ হয়েছে", true);
+// ---------- Firebase (অর্ডার বুক) ----------
+const FB_SDK_VERSION = "9.23.0";
+let FB_CFG = null, ordersRef = null, ordersListener = null;
+
+function loadFirebaseSdk(){
+  return new Promise((res, rej) => {
+    if (window.firebase) return res();
+    const urls = [
+      "https://www.gstatic.com/firebasejs/" + FB_SDK_VERSION + "/firebase-app-compat.js",
+      "https://www.gstatic.com/firebasejs/" + FB_SDK_VERSION + "/firebase-auth-compat.js",
+      "https://www.gstatic.com/firebasejs/" + FB_SDK_VERSION + "/firebase-database-compat.js"
+    ];
+    let done = 0;
+    urls.forEach(u => {
+      const s = document.createElement("script");
+      s.src = u;
+      s.onload = () => { if (++done === urls.length) res(); };
+      s.onerror = () => rej(new Error("Firebase SDK লোড হয়নি"));
+      document.head.appendChild(s);
+    });
+  });
 }
-async function loadOrders(){
-  const url = localStorage.getItem("oh_orders_url");
-  const key = localStorage.getItem("oh_orders_key");
-  if (!url) return showMsg("ordersMsg", "⚠️ আগে Apps Script URL ও Key বসিয়ে সেভ করুন (📖 গাইড দেখুন)", false);
-  showMsg("ordersMsg", "⏳ লোড হচ্ছে...", true);
+
+async function initFirebase(){
+  const fb = S.firebase || {};
+  if (!fb.apiKey || !fb.databaseURL) {
+    document.getElementById("fbLoginBox").innerHTML = `<p class="hint" style="color:#DC2626; font-weight:700">⚠️ Firebase সেটআপ হয়নি। 📖 সেটআপ গাইড ধাপ ২ দেখুন — কনফিগ বসিয়ে ⚙️ সেটিংস ট্যাবে পাবলিশ করুন।</p>`;
+    return;
+  }
+  FB_CFG = fb;
+  document.getElementById("fbEmail").value = localStorage.getItem("oh_fb_email") || "";
   try {
-    const r = await fetch(url + "?action=list&key=" + encodeURIComponent(key || ""));
-    const j = await r.json();
-    const orders = j.orders || [];
-    if (!orders.length) { document.getElementById("ordersTable").innerHTML = "<p class='hint'>এখনো কোনো অর্ডার আসেনি।</p>"; showMsg("ordersMsg", "✅ ০টা অর্ডার", true); return; }
-    document.getElementById("ordersTable").innerHTML = `
-      <table class="orders-table">
-        <tr><th>সময়</th><th>নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>জেলা</th><th>প্রোডাক্ট</th><th>পরিমাণ</th><th>পেমেন্ট</th><th>মোট</th><th>স্ট্যাটাস</th></tr>
-        ${orders.map(o => `<tr>
-          <td>${new Date(o.Time).toLocaleString("bn-BD")}</td>
-          <td>${esc(o.Name)}</td><td><a href="tel:${esc(o.Phone)}">${esc(o.Phone)}</a></td>
-          <td>${esc(o.Address)}</td><td>${esc(o.District)}</td><td>${esc(o.Product)}</td>
-          <td>${esc(o.Qty)}</td><td>${esc(o.Payment)}</td><td><b>৳${esc(o.Total)}</b></td>
-          <td>${esc(o.Status)}</td></tr>`).join("")}
-      </table>`;
-    showMsg("ordersMsg", "✅ " + orders.length + " টা অর্ডার দেখানো হচ্ছে (নতুন আগে)", true);
-  } catch (e) { showMsg("ordersMsg", "❌ লোড করা যায়নি — URL/Key চেক করুন", false); }
+    await loadFirebaseSdk();
+    firebase.initializeApp(fb);
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("fbLoginBox").style.display = "none";
+        document.getElementById("fbOrderBox").style.display = "block";
+        document.getElementById("fbUser").textContent = "🔓 লগইন করা: " + user.email;
+        listenOrders();
+      } else {
+        document.getElementById("fbLoginBox").style.display = "block";
+        document.getElementById("fbOrderBox").style.display = "none";
+      }
+    });
+  } catch (e) {
+    showMsg("ordersMsg", "❌ Firebase লোড করা যায়নি — কনফিগ চেক করুন", false);
+  }
+}
+
+function fbSignIn(){
+  const email = document.getElementById("fbEmail").value.trim();
+  const pass = document.getElementById("fbPass").value;
+  if (!email || !pass) return showMsg("ordersMsg", "⚠️ Email ও Password দিন", false);
+  localStorage.setItem("oh_fb_email", email);
+  showMsg("ordersMsg", "⏳ লগইন হচ্ছে...", true);
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .catch(e => showMsg("ordersMsg", "❌ লগইন ব্যর্থ: " + (e.code === "auth/invalid-credential" ? "Email বা Password ভুল" : (e.message || "আবার চেষ্টা করুন")), false));
+}
+function fbSignOut(){ firebase.auth().signOut(); }
+
+function listenOrders(){
+  if (ordersListener) ordersListener.off();
+  ordersListener = firebase.database().ref("orders").limitToLast(500);
+  ordersListener.on("value", snap => {
+    const rows = [];
+    snap.forEach(ch => {
+      const o = ch.val();
+      if (o && !o.website) rows.push(Object.assign({ _id: ch.key }, o));
+    });
+    rows.sort((a, b) => (b.time || 0) - (a.time || 0));
+    renderOrders(rows);
+  }, err => {
+    showMsg("ordersMsg", "❌ অর্ডার পড়া যাচ্ছে না — Database Rules চেক করুন (📖 গাইড)", false);
+  });
+}
+
+function timeStr(t){
+  if (!t) return "—";
+  const d = new Date(t);
+  const dd = String(d.getDate()).padStart(2, "0"), mm = String(d.getMonth() + 1).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0"), mi = String(d.getMinutes()).padStart(2, "0");
+  return dd + "/" + mm + " " + hh + ":" + mi;
+}
+
+function statusColor(s){
+  if (s === "কনফার্মড") return "#059669";
+  if (s === "শিপড") return "#2563EB";
+  if (s === "ডেলিভারড") return "#7C3AED";
+  if (s === "বাতিল") return "#DC2626";
+  return "#B45309";
+}
+
+function renderOrders(rows){
+  const box = document.getElementById("ordersTable");
+  const stats = document.getElementById("orderStats");
+  const totalTk = rows.reduce((a, o) => a + (Number(o.total) || 0), 0);
+  const newC = rows.filter(o => (o.status || "") === "নতুন").length;
+  const pill = (t, bg) => `<span style="background:${bg}; color:#fff; padding:6px 14px; border-radius:20px; font-weight:800; font-size:13px">${t}</span>`;
+  stats.innerHTML = pill("মোট অর্ডার: " + rows.length, "#7C3AED") + pill("নতুন: " + newC, "#D97706") + pill("মোট টাকা: ৳" + totalTk, "#059669");
+  if (!rows.length) { box.innerHTML = "<p class='hint'>📭 এখনো কোনো অর্ডার আসেনি। সাইটে টেস্ট অর্ডার দিয়ে দেখুন — এখানে লাইভ আসবে!</p>"; return; }
+  box.innerHTML = `
+    <table class="orders-table">
+      <tr><th>সময়</th><th>নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>জেলা</th><th>প্রোডাক্ট</th><th>পরিমাণ</th><th>পেমেন্ট</th><th>TrxID</th><th>মোট</th><th>স্ট্যাটাস</th><th>কাজ</th></tr>
+      ${rows.map(o => `<tr>
+        <td>${timeStr(o.time)}</td>
+        <td>${esc(o.name)}</td>
+        <td><a href="tel:${esc(o.phone)}">${esc(o.phone)}</a></td>
+        <td>${esc(o.address)}</td>
+        <td>${esc(o.district)}</td>
+        <td>${esc(o.product)}</td>
+        <td>${esc(o.qty)}</td>
+        <td>${esc(o.payment)}</td>
+        <td>${esc(o.trx || "—")}</td>
+        <td><b>৳${esc(o.total)}</b></td>
+        <td><span style="color:${statusColor(o.status)}; font-weight:800">${esc(o.status || "নতুন")}</span></td>
+        <td style="white-space:nowrap">
+          ${o.status !== "কনফার্মড" && o.status !== "বাতিল" ? `<button class="btn small green" onclick="setOrderStatus('${o._id}','কনফার্মড')">✅</button> ` : ""}
+          ${o.status === "কনফার্মড" ? `<button class="btn small gray" onclick="setOrderStatus('${o._id}','শিপড')">🚚</button> ` : ""}
+          ${o.status === "শিপড" ? `<button class="btn small" onclick="setOrderStatus('${o._id}','ডেলিভারড')">📦</button> ` : ""}
+          <button class="btn small red" onclick="delOrder('${o._id}')">🗑️</button>
+        </td>
+      </tr>`).join("")}
+    </table>`;
+  showMsg("ordersMsg", "🔴 লাইভ — " + rows.length + " টা অর্ডার (নতুন আসলেই অটো দেখাবে)", true);
+}
+
+function setOrderStatus(id, status){
+  firebase.database().ref("orders/" + id).update({ status: status }).catch(e => showMsg("ordersMsg", "❌ " + e.message, false));
+}
+function delOrder(id){
+  if (!confirm("এই অর্ডার মুছে ফেলবেন? (ফের আনা যাবে না)")) return;
+  firebase.database().ref("orders/" + id).remove().catch(e => showMsg("ordersMsg", "❌ " + e.message, false));
 }
 
 // ---------- token ----------
