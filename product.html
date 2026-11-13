@@ -17,7 +17,7 @@
     <div class="site-inner">
       <a class="brand" href="index.html">
         <div class="brand-logo" id="logoWrap">
-          <img id="logoImg" src="" alt="logo" onerror="this.remove()">
+          <img id="logoImg" alt="logo" style="display:none" onerror="this.style.display='none'">
           <span id="logoLetter">O</span>
         </div>
         <div class="brand-name" id="brandName">Online Hat<small>ভরসাই আমাদের পুঁজি</small></div>
@@ -169,7 +169,11 @@
   <script>
     // ---- Shop info ----
     document.getElementById("logoLetter").textContent = SETTINGS.shopName.charAt(0);
-    if (SETTINGS.logo) document.getElementById("logoImg").src = SETTINGS.logo;
+    const logoImg = document.getElementById("logoImg");
+    if (SETTINGS.logo && logoImg) {
+      logoImg.style.display = "block";
+      logoImg.src = SETTINGS.logo;
+    }
     document.getElementById("brandName").innerHTML = SETTINGS.shopName + "<small>ভরসাই আমাদের পুঁজি</small>";
     document.getElementById("footBrand").textContent = SETTINGS.shopName;
     document.getElementById("footBrand2").textContent = SETTINGS.shopName;
