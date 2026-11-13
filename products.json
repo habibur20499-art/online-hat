@@ -1,0 +1,71 @@
+{
+  "updated": "2026-11-13",
+  "products": [
+    {
+      "id": "p1",
+      "name": "5-in-1 USB-C Hub / Docking Station",
+      "nameBn": "৫ ইন ১ ইউএসবি-সি হাব",
+      "price": 569,
+      "oldPrice": 850,
+      "image": "images/p1.jpg",
+      "emoji": "🔌",
+      "badge": "Best Seller",
+      "desc": "Multi-function USB-C hub with HDMI 4K, 3x USB 3.0, RJ45 LAN & PD charging. Works with laptops, phones & tablets. 1 month warranty."
+    },
+    {
+      "id": "p2",
+      "name": "Wireless Bluetooth Earbuds TWS",
+      "nameBn": "ওয়্যারলেস ব্লুটুথ ইয়ারবাডস",
+      "price": 287,
+      "oldPrice": 450,
+      "image": "images/p2.jpg",
+      "emoji": "🎧",
+      "badge": "Hot Deal",
+      "desc": "TWS earbuds with charging case, touch control, HD mic & deep bass. 4–5 hours playtime. Compatible with all phones."
+    },
+    {
+      "id": "p3",
+      "name": "Mini Tripod & Phone Holder Stand",
+      "nameBn": "মিনি ট্রাইপড ও ফোন হোল্ডার",
+      "price": 350,
+      "oldPrice": 500,
+      "image": "images/p3.jpg",
+      "emoji": "📱",
+      "badge": "",
+      "desc": "Adjustable tripod stand for mobile & camera. Perfect for reels, vlogs & online classes. Strong grip, 360° rotation."
+    },
+    {
+      "id": "p4",
+      "name": "64GB High-Speed Pen Drive",
+      "nameBn": "৬৪ জিবি হাই-স্পিড পেনড্রাইভ",
+      "price": 490,
+      "oldPrice": 650,
+      "image": "images/p4.jpg",
+      "emoji": "💾",
+      "badge": "",
+      "desc": "USB 3.0 metal body pen drive, read speed up to 100MB/s. Dual connector (Type-C + USB) available."
+    },
+    {
+      "id": "p5",
+      "name": "Selfie Ring Light with Stand",
+      "nameBn": "সেলফি রিং লাইট স্ট্যান্ডসহ",
+      "price": 750,
+      "oldPrice": 990,
+      "image": "images/p5.jpg",
+      "emoji": "💡",
+      "badge": "New",
+      "desc": "10-inch LED ring light, 3 color modes & brightness control. Best for live streaming, makeup & reels."
+    },
+    {
+      "id": "p6",
+      "name": "Gaming Mouse RGB Backlit",
+      "nameBn": "গেমিং মাউস আরজিবি",
+      "price": 420,
+      "oldPrice": 600,
+      "image": "images/p6.jpg",
+      "emoji": "🖱️",
+      "badge": "",
+      "desc": "6-button gaming mouse with RGB lighting, adjustable DPI up to 3200. Works on PC & laptop."
+    }
+  ]
+}
