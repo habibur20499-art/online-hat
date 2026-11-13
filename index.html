@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -18,7 +18,14 @@
       <a class="brand" href="index.html">
         <div class="brand-logo" id="logoWrap">
           <img id="logoImg" alt="logo" style="display:none" onerror="this.style.display='none'">
-          <span id="logoLetter">O</span>
+          <svg class="logo-fallback" id="logoFallback" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 21 Q20 9 31 9 Q42 9 42 21 Z" fill="#fff"/>
+            <ellipse cx="31" cy="22" rx="17" ry="4.5" fill="#fff"/>
+            <circle cx="26" cy="36" r="11" fill="none" stroke="#fff" stroke-width="5"/>
+            <path d="M33 43 L39 51" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+            <path d="M37 45 L52 27" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+            <path d="M56 20 L45 22 L53 32 Z" fill="#fff"/>
+          </svg>
         </div>
         <div class="brand-name" id="brandName">Online Hat<small>ভরসাই আমাদের পুঁজি</small></div>
       </a>
@@ -115,11 +122,10 @@
     <a class="sticky-order" href="#productGrid">🛍️ অর্ডার করুন</a>
   </div>
 
-  <script src="products.js?v=3"></script>
+  <script src="products.js?v=4"></script>
   <script>
     // ---- Fill shop info everywhere ----
     document.title = SETTINGS.shopName + " — অথেনটিক প্রোডাক্ট সেরা দামে | সারা বাংলাদেশে হোম ডেলিভারি";
-    document.getElementById("logoLetter").textContent = SETTINGS.shopName.charAt(0);
     const logoImg = document.getElementById("logoImg");
     if (SETTINGS.logo && logoImg) {
       logoImg.style.display = "block";
