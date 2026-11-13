@@ -154,9 +154,21 @@
       <div class="summary">
         <div class="row"><span>সাব টোটাল</span><span id="sumSub">৳0</span></div>
         <div class="row discount" id="rowDiscount" style="display:none"><span>ডিসকাউন্ট</span><span id="sumDiscount">−৳0</span></div>
+        <div class="row discount" id="rowCoupon" style="display:none"><span>🎟️ কুপন ডিসকাউন্ট</span><span id="sumCoupon">−৳0</span></div>
         <div class="row"><span>ডেলিভারি চার্জ</span><span id="sumDelivery">৳0</span></div>
         <div class="row total"><span>টোটাল</span><span id="sumTotal">৳0</span></div>
       </div>
+
+      <div class="field">
+        <label>🎟️ ডিসকাউন্ট কোড (থাকলে)</label>
+        <div style="display:flex; gap:8px">
+          <input id="fCoupon" placeholder="Discount Code" style="flex:1">
+          <button type="button" class="qty-btn" style="width:auto; padding:0 16px" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div id="couponMsg" style="font-size:13px; font-weight:700; margin-top:4px"></div>
+      </div>
+
+      <input id="fWebsite" style="display:none" tabindex="-1" autocomplete="off">
 
       <div class="form-error" id="formError">⚠️ সব তথ্য সঠিকভাবে পূরণ করুন (মোবাইল নম্বর ১১ ডিজিটের হতে হবে)</div>
 
@@ -172,8 +184,9 @@
     </div>
   </div>
 
-  <script src="products.js?v=5"></script>
+  <script src="products.js?v=7"></script>
   <script>
+    function bootShop() {
     // ---- Shop info ----
     const logoImg = document.getElementById("logoImg");
     if (SETTINGS.logo && logoImg) {
@@ -255,9 +268,12 @@
 
       const sub = product.price * qty;
       let discount = isAdvance ? Math.round(sub * SETTINGS.advanceDiscountPercent / 100) : 0;
+      let couponD = 0;
+      if (appliedCoupon && appliedCoupon.type === "percent") couponD = Math.round(sub * appliedCoupon.value / 100);
+      else if (appliedCoupon && appliedCoupon.type === "flat") couponD = Math.min(Number(appliedCoupon.value) || 0, sub);
       let del = 0;
       if (district) del = (district === "ঢাকা") ? SETTINGS.deliveryInsideDhaka : SETTINGS.deliveryOutsideDhaka;
-      let total = sub - discount;
+      let total = sub - discount - couponD;
       if (SETTINGS.freeDeliveryOver > 0 && total >= SETTINGS.freeDeliveryOver) del = 0;
       total += del;
 
@@ -270,10 +286,31 @@
       document.getElementById("sumSub").textContent = "৳" + sub;
       document.getElementById("rowDiscount").style.display = discount ? "flex" : "none";
       document.getElementById("sumDiscount").textContent = "−৳" + discount;
+      document.getElementById("rowCoupon").style.display = couponD ? "flex" : "none";
+      document.getElementById("sumCoupon").textContent = "−৳" + couponD;
       document.getElementById("sumDelivery").textContent = district ? (del === 0 ? "ফ্রি 🎉" : "৳" + del) : "—";
       document.getElementById("sumTotal").textContent = "৳" + total;
       document.getElementById("submitTotal").textContent = "৳" + total;
-      return { qty, sub, discount, del, total, isAdvance, district };
+      return { qty, sub, discount, couponD, del, total, isAdvance, district };
+    }
+
+    // ---- Coupon ----
+    let appliedCoupon = null;
+    function applyCoupon() {
+      const code = document.getElementById("fCoupon").value.trim().toUpperCase();
+      const msg = document.getElementById("couponMsg");
+      if (!code) { appliedCoupon = null; msg.textContent = ""; calc(); return; }
+      const c = COUPONS.find(x => x.active !== false && String(x.code || "").toUpperCase() === code);
+      if (c) {
+        appliedCoupon = c;
+        msg.textContent = "✅ কুপন প্রয়োগ হয়েছে: " + c.code + (c.type === "percent" ? " (" + c.value + "% ছাড়)" : " (৳" + c.value + " ছাড়)");
+        msg.style.color = "var(--green)";
+      } else {
+        appliedCoupon = null;
+        msg.textContent = "❌ ভুল বা নিষ্ক্রিয় কোড";
+        msg.style.color = "var(--accent)";
+      }
+      calc();
     }
 
     // ---- Submit → WhatsApp ----
@@ -302,13 +339,35 @@
 📦 প্রোডাক্ট: ${product.name} (${product.nameBn})
 🔢 পরিমাণ: ${c.qty}
 💰 দাম: ৳${product.price} × ${c.qty} = ৳${c.sub}
-${c.discount ? "🎁 ডিসকাউন্ট (" + SETTINGS.advanceDiscountPercent + "%): −৳" + c.discount + "\n" : ""}🚚 ডেলিভারি (${areaText}): ${c.del === 0 ? "ফ্রি" : "৳" + c.del}
+${c.discount ? "🎁 ডিসকাউন্ট (" + SETTINGS.advanceDiscountPercent + "%): −৳" + c.discount + "\n" : ""}${c.couponD ? "🎟️ কুপন (" + (appliedCoupon ? appliedCoupon.code : "") + "): −৳" + c.couponD + "\n" : ""}🚚 ডেলিভারি (${areaText}): ${c.del === 0 ? "ফ্রি" : "৳" + c.del}
 ✅ সর্বমোট: ৳${c.total}
 💳 পেমেন্ট: ${payText}
 
 👤 নাম: ${name}
 📱 মোবাইল: ${phone}
 🏠 ঠিকানা: ${address}`;
+
+      // ---- অর্ডার বুকে সেভ (Google Sheet) ----
+      if (SETTINGS.orderEndpoint) {
+        try {
+          fetch(SETTINGS.orderEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              name: name,
+              phone: phone,
+              address: address,
+              district: c.district,
+              product: product.name + " (" + product.nameBn + ")",
+              qty: c.qty,
+              payment: payText,
+              trx: trx,
+              total: c.total,
+              website: document.getElementById("fWebsite").value
+            })
+          }).catch(() => {});
+        } catch (e) {}
+      }
 
       const url = "https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent(msg);
       window.open(url, "_blank");
@@ -318,6 +377,8 @@ ${c.discount ? "🎁 ডিসকাউন্ট (" + SETTINGS.advanceDiscountPe
     }
 
     calc();
+    }
+    loadShopData(bootShop);
   </script>
 </body>
 </html>
