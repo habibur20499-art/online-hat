@@ -10,5 +10,11 @@
   "deliveryOutsideDhaka": 120,
   "freeDeliveryOver": 0,
   "logo": "logo.png",
-  "orderEndpoint": ""
+  "orderEndpoint": "",
+  "orderEmail": "",
+  "firebase": {
+    "apiKey": "",
+    "databaseURL": "",
+    "projectId": ""
+  }
 }
