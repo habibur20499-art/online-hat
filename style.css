@@ -422,3 +422,52 @@ footer.site a:hover { color: #fff; }
   .sticky-bar { display: flex; }
   body { padding-bottom: 66px; }
 }
+
+/* ---------- Font size boost (সব লেখা বড় করা হলো) ---------- */
+body { font-size: 17px; }
+.brand-name { font-size: 22px; }
+.brand-name small { font-size: 12px; }
+.call-btn { font-size: 15px; }
+.hero p { font-size: 16px; }
+.hero .pill { font-size: 14px; }
+.section-title { font-size: 24px; }
+.section-sub { font-size: 15px; }
+.card-name { font-size: 16.5px; }
+.card-name-bn { font-size: 14px; }
+.price { font-size: 22px; }
+.old-price { font-size: 15px; }
+.save-tag { font-size: 12px; }
+.badge { font-size: 12px; }
+.order-btn { font-size: 16px; }
+.step h3 { font-size: 16px; }
+.step p { font-size: 14px; }
+.discount-tag { font-size: 14px; }
+.detail h1 { font-size: 26px; }
+.detail .bn { font-size: 16px; }
+.stock-note { font-size: 15px; }
+.buy-btn { font-size: 19px; }
+.modal-head h2 { font-size: 18.5px; }
+.op-name { font-size: 15px; }
+.op-price s { font-size: 14px; }
+.op-price b { font-size: 17px; }
+.pay-box-mini { font-size: 15px; }
+.field label { font-size: 15.5px; }
+.field input:not([type="radio"]):not([type="checkbox"]), .field select, .field textarea { font-size: 16px; }
+.pay-opt { font-size: 15px; }
+.pay-opt small { font-size: 13px; }
+.pay-opt .disc { font-size: 13px; }
+.advance-info { font-size: 14px; }
+.advance-info b { font-size: 15px; }
+.summary { font-size: 15px; }
+.summary .row.total { font-size: 18.5px; }
+.submit-btn { font-size: 18px; }
+.form-error { font-size: 14px; }
+.confirm-box p { font-size: 15px; }
+footer.site { font-size: 15px; }
+.copy { font-size: 13px; }
+.sticky-bar a { font-size: 16px; }
+/* Admin panel */
+.admin-tabs button { font-size: 15px; }
+.hint { font-size: 13px; }
+.orders-table { font-size: 14px; }
+.prod-item .field label { font-size: 14.5px; }
