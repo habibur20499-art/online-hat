@@ -4,6 +4,10 @@
 const SETTINGS = {
   shopName: "Online Hat",              // আপনার শপের নাম দিন
   tagline: "অথেনটিক প্রোডাক্ট, সেরা দামে — সারা বাংলাদেশে হোম ডেলিভারি",
+
+  // শপের লোগো — repo তে images ফোল্ডারে logo.png আপলোড করলে অটো দেখাবে।
+  // লোগো ছবি না থাকলে প্রথম অক্ষর দেখাবে। এডিট করবেন না যদি না নিজের লোগো থাকে।
+  logo: "images/logo.png",
   phone: "01786647606",                // আপনার ফোন নম্বর (কাস্টমার কল করবে)
 
   // WhatsApp number in international format WITHOUT + (01XXXXXXXXX -> 8801XXXXXXXXX)
